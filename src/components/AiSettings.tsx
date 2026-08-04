@@ -1,5 +1,5 @@
 import type { Color } from 'chess.js'
-import { AI_LEVELS } from '../chess/engine'
+import { AI_LEVELS, AI_SPEED_PRESETS } from '../chess/engine'
 
 export type GameMode = 'local' | 'ai'
 
@@ -10,6 +10,8 @@ type AiSettingsProps = {
   onLevelChange: (level: number) => void
   playerColor: Color
   onPlayerColorChange: (color: Color) => void
+  aiMoveDelay: number
+  onAiMoveDelayChange: (delayMs: number) => void
 }
 
 export function AiSettings({
@@ -19,6 +21,8 @@ export function AiSettings({
   onLevelChange,
   playerColor,
   onPlayerColorChange,
+  aiMoveDelay,
+  onAiMoveDelayChange,
 }: AiSettingsProps) {
   const levelConfig = AI_LEVELS[aiLevel - 1]
 
@@ -73,6 +77,20 @@ export function AiSettings({
             >
               흑
             </button>
+          </div>
+
+          <div className="speed-choice" role="group" aria-label="AI 착수 속도">
+            <span>AI 속도</span>
+            {AI_SPEED_PRESETS.map((preset) => (
+              <button
+                key={preset.label}
+                type="button"
+                className={aiMoveDelay === preset.delayMs ? 'active' : ''}
+                onClick={() => onAiMoveDelayChange(preset.delayMs)}
+              >
+                {preset.label}
+              </button>
+            ))}
           </div>
         </div>
       )}

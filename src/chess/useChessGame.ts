@@ -173,7 +173,7 @@ export function useChessGame() {
     capturedPieces,
     pendingPromotion,
     orientation,
-    moveHistory: game.history(),
+    moveHistory: game.history({ verbose: true }),
     canUndo: game.history().length > 0,
     isGameOver: game.isGameOver(),
     trySelectOrMove,

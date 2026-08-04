@@ -28,6 +28,13 @@ export function getLevelConfig(level: number): AiLevelConfig {
   return AI_LEVELS[clamped - 1]
 }
 
+export const AI_SPEED_PRESETS = [
+  { label: '빠름', delayMs: 300 },
+  { label: '보통', delayMs: 1000 },
+  { label: '느림', delayMs: 2000 },
+  { label: '매우 느림', delayMs: 3500 },
+] as const
+
 const CHECKMATE_SCORE = 100000
 
 class SearchAborted extends Error {}

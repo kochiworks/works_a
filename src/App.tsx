@@ -9,6 +9,7 @@ import { Controls } from './components/Controls'
 import { AiSettings, type GameMode } from './components/AiSettings'
 import { useChessGame } from './chess/useChessGame'
 import { useAiWorker } from './chess/useAiWorker'
+import { AI_SPEED_PRESETS } from './chess/engine'
 import './App.css'
 
 function App() {
@@ -43,6 +44,7 @@ function App() {
   const [aiLevel, setAiLevel] = useState(5)
   const [playerColor, setPlayerColor] = useState<Color>('w')
   const [aiThinking, setAiThinking] = useState(false)
+  const [aiMoveDelay, setAiMoveDelay] = useState<number>(AI_SPEED_PRESETS[1].delayMs)
   const aiColor: Color = playerColor === 'w' ? 'b' : 'w'
 
   useEffect(() => {
@@ -55,7 +57,8 @@ function App() {
     }
     let cancelled = false
     setAiThinking(true)
-    requestMove(fen, aiLevel).then((move) => {
+    const minDelay = new Promise<void>((resolve) => setTimeout(resolve, aiMoveDelay))
+    Promise.all([requestMove(fen, aiLevel), minDelay]).then(([move]) => {
       if (cancelled) return
       setAiThinking(false)
       if (move) {
@@ -65,7 +68,18 @@ function App() {
     return () => {
       cancelled = true
     }
-  }, [mode, turn, aiColor, fen, aiLevel, isGameOver, pendingPromotion, requestMove, makeMove])
+  }, [
+    mode,
+    turn,
+    aiColor,
+    fen,
+    aiLevel,
+    aiMoveDelay,
+    isGameOver,
+    pendingPromotion,
+    requestMove,
+    makeMove,
+  ])
 
   const boardLocked = mode === 'ai' && (turn === aiColor || aiThinking)
 
@@ -99,6 +113,8 @@ function App() {
             onLevelChange={setAiLevel}
             playerColor={playerColor}
             onPlayerColorChange={handlePlayerColorChange}
+            aiMoveDelay={aiMoveDelay}
+            onAiMoveDelayChange={setAiMoveDelay}
           />
           <StatusBar status={status} turn={turn} aiThinking={aiThinking} />
           <Board
