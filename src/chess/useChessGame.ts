@@ -1,5 +1,5 @@
 import { useCallback, useMemo, useRef, useState } from 'react'
-import { Chess, type Color, type PieceSymbol, type Square } from 'chess.js'
+import { Chess, type Color, type Move, type PieceSymbol, type Square } from 'chess.js'
 
 export type PendingPromotion = {
   from: Square
@@ -19,7 +19,7 @@ export type GameStatus =
   | 'stalemate'
   | 'draw'
 
-export function useChessGame() {
+export function useChessGame(onMove?: (move: Move) => void) {
   const gameRef = useRef(new Chess())
   const [version, setVersion] = useState(0)
   const [selected, setSelected] = useState<Square | null>(null)
@@ -81,10 +81,11 @@ export function useChessGame() {
         setSelected(null)
         setPendingPromotion(null)
         rerender()
+        onMove?.(result)
       }
       return result
     },
-    [game, rerender],
+    [game, rerender, onMove],
   )
 
   const trySelectOrMove = useCallback(
