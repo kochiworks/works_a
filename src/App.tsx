@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import type { Color, Move } from 'chess.js'
 import { Board } from './components/Board'
 import { PromotionDialog } from './components/PromotionDialog'
@@ -6,7 +6,8 @@ import { StatusBar } from './components/StatusBar'
 import { CapturedPieces } from './components/CapturedPieces'
 import { MoveList } from './components/MoveList'
 import { Controls } from './components/Controls'
-import { AiSettings, type GameMode } from './components/AiSettings'
+import { AiSettings, type GameMode, type LocalField } from './components/AiSettings'
+import type { PlayerSummary } from './components/PlayerList'
 import { useChessGame } from './chess/useChessGame'
 import { useAiWorker } from './chess/useAiWorker'
 import { AI_SPEED_PRESETS } from './chess/engine'
@@ -105,14 +106,53 @@ function App() {
   const [localPlayer2Name, setLocalPlayer2Name] = useState<string>(() =>
     loadStoredName(LOCAL_PLAYER2_KEY, '플레이어2'),
   )
-  // Subscribes this component to record-store updates; values are re-read via the
-  // getters below so the derived slices always reflect the latest state.
-  useAiRecords()
-  useLocalRecords()
+  const [activeLocalField, setActiveLocalField] = useState<LocalField>('p1')
+  const aiRecordsState = useAiRecords()
+  const localRecordsState = useLocalRecords()
   const aiColor: Color = playerColor === 'w' ? 'b' : 'w'
 
   const playerAiRecords = getPlayerAiRecords(playerName)
   const localPairRecord = getLocalRecord(localPlayer1Name || '플레이어1', localPlayer2Name || '플레이어2')
+
+  const savedPlayers = useMemo<PlayerSummary[]>(() => {
+    const summaries = new Map<string, PlayerSummary>()
+    const ensure = (name: string) => {
+      let entry = summaries.get(name)
+      if (!entry) {
+        entry = { name, wins: 0, losses: 0, draws: 0 }
+        summaries.set(name, entry)
+      }
+      return entry
+    }
+
+    for (const [name, botRecords] of Object.entries(aiRecordsState)) {
+      const entry = ensure(name)
+      for (const record of Object.values(botRecords)) {
+        entry.wins += record.wins
+        entry.losses += record.losses
+        entry.draws += record.draws
+      }
+    }
+
+    for (const pair of Object.values(localRecordsState)) {
+      const [nameA, nameB] = pair.names
+      const entryA = ensure(nameA)
+      const entryB = ensure(nameB)
+      entryA.wins += pair.wins[nameA] ?? 0
+      entryA.losses += pair.wins[nameB] ?? 0
+      entryA.draws += pair.draws
+      entryB.wins += pair.wins[nameB] ?? 0
+      entryB.losses += pair.wins[nameA] ?? 0
+      entryB.draws += pair.draws
+    }
+
+    return Array.from(summaries.values()).sort((a, b) => {
+      const gamesA = a.wins + a.losses + a.draws
+      const gamesB = b.wins + b.losses + b.draws
+      if (gamesB !== gamesA) return gamesB - gamesA
+      return a.name.localeCompare(b.name, 'ko')
+    })
+  }, [aiRecordsState, localRecordsState])
 
   useEffect(() => {
     persistName(PLAYER_NAME_KEY, playerName)
@@ -216,6 +256,16 @@ function App() {
     resetAllLocalRecords()
   }
 
+  const handleSelectSavedPlayer = (name: string) => {
+    if (mode === 'ai') {
+      setPlayerName(name)
+    } else if (activeLocalField === 'p2') {
+      setLocalPlayer2Name(name)
+    } else {
+      setLocalPlayer1Name(name)
+    }
+  }
+
   const handleToggleSound = () => {
     setSoundOn((prev) => {
       const next = !prev
@@ -264,6 +314,9 @@ function App() {
             localPairRecord={localPairRecord}
             onResetLocalPairRecord={handleResetLocalPairRecord}
             onResetAllRecords={handleResetAllRecords}
+            savedPlayers={savedPlayers}
+            onSelectSavedPlayer={handleSelectSavedPlayer}
+            onLocalFieldFocus={setActiveLocalField}
           />
           <StatusBar status={status} turn={turn} aiThinking={aiThinking} />
           <Board

@@ -2,10 +2,12 @@ import type { Color } from 'chess.js'
 import { AI_SPEED_PRESETS } from '../chess/engine'
 import { getBotProfile } from '../chess/botProfiles'
 import { BotGrid } from './BotGrid'
+import { PlayerList, type PlayerSummary } from './PlayerList'
 import type { PlayerAiRecords } from '../state/records'
 import type { LocalPairRecord } from '../state/localRecords'
 
 export type GameMode = 'local' | 'ai'
+export type LocalField = 'p1' | 'p2'
 
 type AiSettingsProps = {
   mode: GameMode
@@ -29,6 +31,9 @@ type AiSettingsProps = {
   localPairRecord: LocalPairRecord | undefined
   onResetLocalPairRecord: () => void
   onResetAllRecords: () => void
+  savedPlayers: PlayerSummary[]
+  onSelectSavedPlayer: (name: string) => void
+  onLocalFieldFocus: (field: LocalField) => void
 }
 
 export function AiSettings({
@@ -53,6 +58,9 @@ export function AiSettings({
   localPairRecord,
   onResetLocalPairRecord,
   onResetAllRecords,
+  savedPlayers,
+  onSelectSavedPlayer,
+  onLocalFieldFocus,
 }: AiSettingsProps) {
   const bot = getBotProfile(aiLevel)
   const hasLocalRecord = localPairRecord
@@ -61,6 +69,12 @@ export function AiSettings({
 
   return (
     <div className="ai-settings">
+      <PlayerList
+        players={savedPlayers}
+        onSelect={onSelectSavedPlayer}
+        activeName={mode === 'ai' ? playerName : undefined}
+      />
+
       <div className="mode-toggle" role="group" aria-label="게임 모드">
         <button
           type="button"
@@ -151,6 +165,7 @@ export function AiSettings({
                 maxLength={20}
                 placeholder="플레이어1"
                 onChange={(e) => onLocalPlayer1NameChange(e.target.value)}
+                onFocus={() => onLocalFieldFocus('p1')}
               />
             </label>
             <label className="player-name-field">
@@ -161,6 +176,7 @@ export function AiSettings({
                 maxLength={20}
                 placeholder="플레이어2"
                 onChange={(e) => onLocalPlayer2NameChange(e.target.value)}
+                onFocus={() => onLocalFieldFocus('p2')}
               />
             </label>
           </div>
