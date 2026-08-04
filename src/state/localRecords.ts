@@ -76,6 +76,22 @@ export function resetLocalRecord(nameA: string, nameB: string) {
   emit()
 }
 
+export function resetPlayerLocalRecords(playerName: string) {
+  const next: LocalRecordsState = {}
+  let changed = false
+  for (const [key, pair] of Object.entries(state)) {
+    if (pair.names.includes(playerName)) {
+      changed = true
+      continue
+    }
+    next[key] = pair
+  }
+  if (!changed) return
+  state = next
+  persist()
+  emit()
+}
+
 export function resetAllLocalRecords() {
   state = {}
   persist()

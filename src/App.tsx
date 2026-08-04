@@ -18,11 +18,18 @@ import {
   playMoveSound,
   setSoundEnabled,
 } from './audio/sound'
-import { recordResult, resetAiRecord, resetAllAiRecords, getPlayerAiRecords } from './state/records'
+import {
+  recordResult,
+  resetAiRecord,
+  resetPlayerAiRecords,
+  resetAllAiRecords,
+  getPlayerAiRecords,
+} from './state/records'
 import { useAiRecords } from './state/useAiRecords'
 import {
   recordLocalResult,
   resetLocalRecord,
+  resetPlayerLocalRecords,
   resetAllLocalRecords,
   getLocalRecord,
 } from './state/localRecords'
@@ -265,6 +272,12 @@ function App() {
     resetAllLocalRecords()
   }
 
+  const handleResetPlayer = (name: string) => {
+    if (!window.confirm(`'${name}'님의 모든 기록을 초기화할까요? 이 작업은 되돌릴 수 없습니다.`)) return
+    resetPlayerAiRecords(name)
+    resetPlayerLocalRecords(name)
+  }
+
   const handleSelectSavedPlayer = (name: string) => {
     if (mode === 'ai') {
       setPlayerName(name)
@@ -326,6 +339,7 @@ function App() {
             savedPlayers={savedPlayers}
             onSelectSavedPlayer={handleSelectSavedPlayer}
             onLocalFieldFocus={setActiveLocalField}
+            onResetPlayer={handleResetPlayer}
           />
           <StatusBar status={status} turn={turn} aiThinking={aiThinking} />
           <Board

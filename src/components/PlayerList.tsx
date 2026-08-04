@@ -14,13 +14,14 @@ type PlayerListProps = {
   players: PlayerSummary[]
   onSelect: (name: string) => void
   activeName?: string
+  onResetPlayer: (name: string) => void
 }
 
 function hasGames(totals: RecordTotals): boolean {
   return totals.wins + totals.losses + totals.draws > 0
 }
 
-export function PlayerList({ players, onSelect, activeName }: PlayerListProps) {
+export function PlayerList({ players, onSelect, activeName, onResetPlayer }: PlayerListProps) {
   if (players.length === 0) return null
 
   return (
@@ -45,6 +46,18 @@ export function PlayerList({ players, onSelect, activeName }: PlayerListProps) {
                   2인 {player.local.wins}승 {player.local.losses}패 {player.local.draws}무
                 </span>
               )}
+            </button>
+            <button
+              type="button"
+              className="player-list-reset"
+              aria-label={`${player.name} 기록 초기화`}
+              title={`${player.name} 기록 초기화`}
+              onClick={(e) => {
+                e.stopPropagation()
+                onResetPlayer(player.name)
+              }}
+            >
+              ×
             </button>
           </li>
         ))}

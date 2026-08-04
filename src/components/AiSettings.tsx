@@ -34,6 +34,7 @@ type AiSettingsProps = {
   savedPlayers: PlayerSummary[]
   onSelectSavedPlayer: (name: string) => void
   onLocalFieldFocus: (field: LocalField) => void
+  onResetPlayer: (name: string) => void
 }
 
 export function AiSettings({
@@ -61,6 +62,7 @@ export function AiSettings({
   savedPlayers,
   onSelectSavedPlayer,
   onLocalFieldFocus,
+  onResetPlayer,
 }: AiSettingsProps) {
   const bot = getBotProfile(aiLevel)
   const hasLocalRecord = localPairRecord
@@ -73,6 +75,7 @@ export function AiSettings({
         players={savedPlayers}
         onSelect={onSelectSavedPlayer}
         activeName={mode === 'ai' ? playerName : undefined}
+        onResetPlayer={onResetPlayer}
       />
 
       <div className="mode-toggle" role="group" aria-label="게임 모드">

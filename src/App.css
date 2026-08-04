@@ -104,6 +104,11 @@
   overflow-y: auto;
 }
 
+.player-list li {
+  position: relative;
+  display: flex;
+}
+
 .player-list button {
   display: flex;
   flex-direction: column;
@@ -116,6 +121,30 @@
   padding: 0.35rem 0.55rem;
   cursor: pointer;
   text-align: left;
+}
+
+.player-list-reset {
+  position: absolute;
+  top: -0.35rem;
+  right: -0.35rem;
+  width: 1.1rem;
+  height: 1.1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  border: 1px solid var(--border);
+  background: var(--bg);
+  font-size: 0.85rem;
+  line-height: 1;
+  color: var(--text-dim);
+  cursor: pointer;
+  padding: 0;
+}
+
+.player-list-reset:hover {
+  background: rgba(217, 83, 79, 0.25);
+  color: #ff8a85;
 }
 
 .player-list button:hover {

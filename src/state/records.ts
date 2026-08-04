@@ -77,6 +77,16 @@ export function resetAiRecord(playerName: string, level: number) {
   emit()
 }
 
+export function resetPlayerAiRecords(playerName: string) {
+  const key = normalizeName(playerName)
+  if (!state[key]) return
+  const next = { ...state }
+  delete next[key]
+  state = next
+  persist()
+  emit()
+}
+
 export function resetAllAiRecords() {
   state = {}
   persist()
