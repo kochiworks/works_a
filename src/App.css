@@ -127,6 +127,7 @@
 }
 
 .bot-tile {
+  position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -138,6 +139,27 @@
   color: var(--text);
   cursor: pointer;
   text-align: center;
+}
+
+.bot-tile-reset {
+  position: absolute;
+  top: 2px;
+  right: 4px;
+  width: 1.1rem;
+  height: 1.1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  font-size: 0.85rem;
+  line-height: 1;
+  color: var(--text-dim);
+  cursor: pointer;
+}
+
+.bot-tile-reset:hover {
+  background: rgba(217, 83, 79, 0.25);
+  color: #ff8a85;
 }
 
 .bot-tile:hover {
@@ -240,6 +262,60 @@
 .local-options {
   display: flex;
   flex-direction: column;
+  gap: 0.6rem;
+}
+
+.local-players {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.local-players .player-name-field {
+  flex: 1;
+}
+
+.local-record-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  font-size: 0.8rem;
+  color: var(--text-dim);
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 0.4rem 0.6rem;
+}
+
+.record-reset-btn {
+  flex-shrink: 0;
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  color: var(--text-dim);
+  font-size: 0.75rem;
+  padding: 0.25rem 0.5rem;
+  cursor: pointer;
+}
+
+.record-reset-btn:hover {
+  border-color: #d9534f;
+  color: #ff8a85;
+}
+
+.reset-all-btn {
+  align-self: flex-start;
+  background: transparent;
+  border: none;
+  color: var(--text-dim);
+  font-size: 0.72rem;
+  text-decoration: underline;
+  cursor: pointer;
+  padding: 0.2rem 0;
+}
+
+.reset-all-btn:hover {
+  color: #ff8a85;
 }
 
 .toggle-row {

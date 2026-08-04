@@ -17,19 +17,36 @@ import {
   playMoveSound,
   setSoundEnabled,
 } from './audio/sound'
-import { recordResult } from './state/records'
+import { recordResult, resetAiRecord, resetAllAiRecords, getPlayerAiRecords } from './state/records'
 import { useAiRecords } from './state/useAiRecords'
+import {
+  recordLocalResult,
+  resetLocalRecord,
+  resetAllLocalRecords,
+  getLocalRecord,
+} from './state/localRecords'
+import { useLocalRecords } from './state/useLocalRecords'
 import './App.css'
 
-const PLAYER_NAME_KEY = 'chess.playerName'
-
-function loadPlayerName(): string {
+function loadStoredName(key: string, fallback: string): string {
   try {
-    return localStorage.getItem(PLAYER_NAME_KEY) || '플레이어'
+    return localStorage.getItem(key) || fallback
   } catch {
-    return '플레이어'
+    return fallback
   }
 }
+
+function persistName(key: string, value: string) {
+  try {
+    localStorage.setItem(key, value)
+  } catch {
+    // ignore write failures (e.g. private browsing quota)
+  }
+}
+
+const PLAYER_NAME_KEY = 'chess.playerName'
+const LOCAL_PLAYER1_KEY = 'chess.localPlayer1Name'
+const LOCAL_PLAYER2_KEY = 'chess.localPlayer2Name'
 
 function App() {
   const [soundOn, setSoundOn] = useState(true)
@@ -79,17 +96,35 @@ function App() {
   const [aiThinking, setAiThinking] = useState(false)
   const [aiMoveDelay, setAiMoveDelay] = useState<number>(AI_SPEED_PRESETS[1].delayMs)
   const [faceToFace, setFaceToFace] = useState(false)
-  const [playerName, setPlayerName] = useState<string>(loadPlayerName)
-  const aiRecords = useAiRecords()
+  const [playerName, setPlayerName] = useState<string>(() =>
+    loadStoredName(PLAYER_NAME_KEY, '플레이어'),
+  )
+  const [localPlayer1Name, setLocalPlayer1Name] = useState<string>(() =>
+    loadStoredName(LOCAL_PLAYER1_KEY, '플레이어1'),
+  )
+  const [localPlayer2Name, setLocalPlayer2Name] = useState<string>(() =>
+    loadStoredName(LOCAL_PLAYER2_KEY, '플레이어2'),
+  )
+  // Subscribes this component to record-store updates; values are re-read via the
+  // getters below so the derived slices always reflect the latest state.
+  useAiRecords()
+  useLocalRecords()
   const aiColor: Color = playerColor === 'w' ? 'b' : 'w'
 
+  const playerAiRecords = getPlayerAiRecords(playerName)
+  const localPairRecord = getLocalRecord(localPlayer1Name || '플레이어1', localPlayer2Name || '플레이어2')
+
   useEffect(() => {
-    try {
-      localStorage.setItem(PLAYER_NAME_KEY, playerName)
-    } catch {
-      // ignore write failures (e.g. private browsing quota)
-    }
+    persistName(PLAYER_NAME_KEY, playerName)
   }, [playerName])
+
+  useEffect(() => {
+    persistName(LOCAL_PLAYER1_KEY, localPlayer1Name)
+  }, [localPlayer1Name])
+
+  useEffect(() => {
+    persistName(LOCAL_PLAYER2_KEY, localPlayer2Name)
+  }, [localPlayer2Name])
 
   useEffect(() => {
     setOrientation(mode === 'ai' ? playerColor : 'w')
@@ -98,16 +133,27 @@ function App() {
   const resultRecordedRef = useRef(false)
   useEffect(() => {
     const isTerminal = status === 'checkmate' || status === 'stalemate' || status === 'draw'
-    if (mode !== 'ai' || !isTerminal) {
+    if (!isTerminal) {
       resultRecordedRef.current = false
       return
     }
     if (resultRecordedRef.current) return
     resultRecordedRef.current = true
 
-    const result = status === 'checkmate' ? (turn === playerColor ? 'loss' : 'win') : 'draw'
-    recordResult(aiLevel, result)
-  }, [status, mode, turn, playerColor, aiLevel])
+    if (mode === 'ai') {
+      const result = status === 'checkmate' ? (turn === playerColor ? 'loss' : 'win') : 'draw'
+      recordResult(playerName, aiLevel, result)
+    } else {
+      const p1 = localPlayer1Name || '플레이어1'
+      const p2 = localPlayer2Name || '플레이어2'
+      let winnerName: string | null = null
+      if (status === 'checkmate') {
+        const winnerColor = turn === 'w' ? 'b' : 'w'
+        winnerName = winnerColor === 'w' ? p1 : p2
+      }
+      recordLocalResult(p1, p2, winnerName)
+    }
+  }, [status, mode, turn, playerColor, aiLevel, playerName, localPlayer1Name, localPlayer2Name])
 
   useEffect(() => {
     if (mode !== 'ai' || turn !== aiColor || isGameOver || pendingPromotion) {
@@ -156,6 +202,20 @@ function App() {
     reset()
   }
 
+  const handleResetBotRecord = (level: number) => {
+    resetAiRecord(playerName, level)
+  }
+
+  const handleResetLocalPairRecord = () => {
+    resetLocalRecord(localPlayer1Name || '플레이어1', localPlayer2Name || '플레이어2')
+  }
+
+  const handleResetAllRecords = () => {
+    if (!window.confirm('모든 승패 기록을 초기화할까요? 이 작업은 되돌릴 수 없습니다.')) return
+    resetAllAiRecords()
+    resetAllLocalRecords()
+  }
+
   const handleToggleSound = () => {
     setSoundOn((prev) => {
       const next = !prev
@@ -195,7 +255,15 @@ function App() {
             onFaceToFaceChange={setFaceToFace}
             playerName={playerName}
             onPlayerNameChange={setPlayerName}
-            records={aiRecords}
+            records={playerAiRecords}
+            onResetBotRecord={handleResetBotRecord}
+            localPlayer1Name={localPlayer1Name}
+            onLocalPlayer1NameChange={setLocalPlayer1Name}
+            localPlayer2Name={localPlayer2Name}
+            onLocalPlayer2NameChange={setLocalPlayer2Name}
+            localPairRecord={localPairRecord}
+            onResetLocalPairRecord={handleResetLocalPairRecord}
+            onResetAllRecords={handleResetAllRecords}
           />
           <StatusBar status={status} turn={turn} aiThinking={aiThinking} />
           <Board
