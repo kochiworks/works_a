@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import type { Color, Move } from 'chess.js'
 import { Board } from './components/Board'
 import { PromotionDialog } from './components/PromotionDialog'
@@ -17,7 +17,19 @@ import {
   playMoveSound,
   setSoundEnabled,
 } from './audio/sound'
+import { recordResult } from './state/records'
+import { useAiRecords } from './state/useAiRecords'
 import './App.css'
+
+const PLAYER_NAME_KEY = 'chess.playerName'
+
+function loadPlayerName(): string {
+  try {
+    return localStorage.getItem(PLAYER_NAME_KEY) || '플레이어'
+  } catch {
+    return '플레이어'
+  }
+}
 
 function App() {
   const [soundOn, setSoundOn] = useState(true)
@@ -67,11 +79,35 @@ function App() {
   const [aiThinking, setAiThinking] = useState(false)
   const [aiMoveDelay, setAiMoveDelay] = useState<number>(AI_SPEED_PRESETS[1].delayMs)
   const [faceToFace, setFaceToFace] = useState(false)
+  const [playerName, setPlayerName] = useState<string>(loadPlayerName)
+  const aiRecords = useAiRecords()
   const aiColor: Color = playerColor === 'w' ? 'b' : 'w'
+
+  useEffect(() => {
+    try {
+      localStorage.setItem(PLAYER_NAME_KEY, playerName)
+    } catch {
+      // ignore write failures (e.g. private browsing quota)
+    }
+  }, [playerName])
 
   useEffect(() => {
     setOrientation(mode === 'ai' ? playerColor : 'w')
   }, [mode, playerColor, setOrientation])
+
+  const resultRecordedRef = useRef(false)
+  useEffect(() => {
+    const isTerminal = status === 'checkmate' || status === 'stalemate' || status === 'draw'
+    if (mode !== 'ai' || !isTerminal) {
+      resultRecordedRef.current = false
+      return
+    }
+    if (resultRecordedRef.current) return
+    resultRecordedRef.current = true
+
+    const result = status === 'checkmate' ? (turn === playerColor ? 'loss' : 'win') : 'draw'
+    recordResult(aiLevel, result)
+  }, [status, mode, turn, playerColor, aiLevel])
 
   useEffect(() => {
     if (mode !== 'ai' || turn !== aiColor || isGameOver || pendingPromotion) {
@@ -157,6 +193,9 @@ function App() {
             onAiMoveDelayChange={setAiMoveDelay}
             faceToFace={faceToFace}
             onFaceToFaceChange={setFaceToFace}
+            playerName={playerName}
+            onPlayerNameChange={setPlayerName}
+            records={aiRecords}
           />
           <StatusBar status={status} turn={turn} aiThinking={aiThinking} />
           <Board

@@ -81,6 +81,95 @@
   padding: 0.6rem 0.9rem;
 }
 
+.player-name-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  font-size: 0.85rem;
+}
+
+.player-name-field input[type='text'] {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 0.5rem 0.6rem;
+  color: var(--text);
+  font-size: 0.9rem;
+}
+
+.player-name-field input[type='text']:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+
+.matchup-line {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.9rem;
+  flex-wrap: wrap;
+}
+
+.matchup-vs {
+  color: var(--text-dim);
+  font-size: 0.75rem;
+}
+
+.matchup-bot {
+  color: var(--accent);
+  font-weight: 600;
+}
+
+.bot-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
+  gap: 0.5rem;
+}
+
+.bot-tile {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.15rem;
+  padding: 0.5rem 0.35rem;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--text);
+  cursor: pointer;
+  text-align: center;
+}
+
+.bot-tile:hover {
+  border-color: var(--accent);
+}
+
+.bot-tile.active {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #12190f;
+}
+
+.bot-avatar {
+  font-size: 1.6rem;
+  line-height: 1;
+}
+
+.bot-name {
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.bot-level {
+  font-size: 0.65rem;
+  opacity: 0.8;
+}
+
+.bot-record {
+  font-size: 0.62rem;
+  opacity: 0.75;
+}
+
 .mode-toggle,
 .color-choice,
 .speed-choice {

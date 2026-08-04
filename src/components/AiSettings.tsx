@@ -1,5 +1,8 @@
 import type { Color } from 'chess.js'
-import { AI_LEVELS, AI_SPEED_PRESETS } from '../chess/engine'
+import { AI_SPEED_PRESETS } from '../chess/engine'
+import { getBotProfile } from '../chess/botProfiles'
+import { BotGrid } from './BotGrid'
+import type { RecordsState } from '../state/records'
 
 export type GameMode = 'local' | 'ai'
 
@@ -14,6 +17,9 @@ type AiSettingsProps = {
   onAiMoveDelayChange: (delayMs: number) => void
   faceToFace: boolean
   onFaceToFaceChange: (faceToFace: boolean) => void
+  playerName: string
+  onPlayerNameChange: (name: string) => void
+  records: RecordsState
 }
 
 export function AiSettings({
@@ -27,11 +33,25 @@ export function AiSettings({
   onAiMoveDelayChange,
   faceToFace,
   onFaceToFaceChange,
+  playerName,
+  onPlayerNameChange,
+  records,
 }: AiSettingsProps) {
-  const levelConfig = AI_LEVELS[aiLevel - 1]
+  const bot = getBotProfile(aiLevel)
 
   return (
     <div className="ai-settings">
+      <label className="player-name-field">
+        <span>내 이름</span>
+        <input
+          type="text"
+          value={playerName}
+          maxLength={20}
+          placeholder="플레이어"
+          onChange={(e) => onPlayerNameChange(e.target.value)}
+        />
+      </label>
+
       <div className="mode-toggle" role="group" aria-label="게임 모드">
         <button
           type="button"
@@ -51,19 +71,15 @@ export function AiSettings({
 
       {mode === 'ai' && (
         <div className="ai-options">
-          <label className="level-picker">
-            <span>
-              난이도 {aiLevel} · {levelConfig.label}
+          <div className="matchup-line">
+            <strong>{playerName || '플레이어'}</strong>
+            <span className="matchup-vs">vs</span>
+            <span className="matchup-bot">
+              {bot.avatar} {bot.name}
             </span>
-            <input
-              type="range"
-              min={1}
-              max={10}
-              step={1}
-              value={aiLevel}
-              onChange={(e) => onLevelChange(Number(e.target.value))}
-            />
-          </label>
+          </div>
+
+          <BotGrid selectedLevel={aiLevel} onSelect={onLevelChange} records={records} />
 
           <div className="color-choice" role="group" aria-label="내 기물 색상">
             <span>내 기물</span>
