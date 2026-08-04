@@ -45,6 +45,7 @@ function App() {
   const [playerColor, setPlayerColor] = useState<Color>('w')
   const [aiThinking, setAiThinking] = useState(false)
   const [aiMoveDelay, setAiMoveDelay] = useState<number>(AI_SPEED_PRESETS[1].delayMs)
+  const [faceToFace, setFaceToFace] = useState(false)
   const aiColor: Color = playerColor === 'w' ? 'b' : 'w'
 
   useEffect(() => {
@@ -115,6 +116,8 @@ function App() {
             onPlayerColorChange={handlePlayerColorChange}
             aiMoveDelay={aiMoveDelay}
             onAiMoveDelayChange={setAiMoveDelay}
+            faceToFace={faceToFace}
+            onFaceToFaceChange={setFaceToFace}
           />
           <StatusBar status={status} turn={turn} aiThinking={aiThinking} />
           <Board
@@ -125,6 +128,7 @@ function App() {
             lastMove={lastMove}
             inCheckSquare={checkSquare}
             onSquareClick={handleSquareClick}
+            faceToFace={mode === 'local' && faceToFace}
           />
           <Controls
             onNewGame={reset}

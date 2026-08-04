@@ -12,6 +12,8 @@ type AiSettingsProps = {
   onPlayerColorChange: (color: Color) => void
   aiMoveDelay: number
   onAiMoveDelayChange: (delayMs: number) => void
+  faceToFace: boolean
+  onFaceToFaceChange: (faceToFace: boolean) => void
 }
 
 export function AiSettings({
@@ -23,6 +25,8 @@ export function AiSettings({
   onPlayerColorChange,
   aiMoveDelay,
   onAiMoveDelayChange,
+  faceToFace,
+  onFaceToFaceChange,
 }: AiSettingsProps) {
   const levelConfig = AI_LEVELS[aiLevel - 1]
 
@@ -92,6 +96,22 @@ export function AiSettings({
               </button>
             ))}
           </div>
+        </div>
+      )}
+
+      {mode === 'local' && (
+        <div className="local-options">
+          <label className="toggle-row">
+            <input
+              type="checkbox"
+              checked={faceToFace}
+              onChange={(e) => onFaceToFaceChange(e.target.checked)}
+            />
+            <span>
+              마주보기 모드
+              <small>태블릿을 사이에 두고 마주 앉을 때 상대 기물을 180° 회전합니다</small>
+            </span>
+          </label>
         </div>
       )}
     </div>

@@ -12,6 +12,7 @@ type BoardProps = {
   lastMove: { from: SquareType; to: SquareType } | null
   inCheckSquare: SquareType | null
   onSquareClick: (square: SquareType) => void
+  faceToFace?: boolean
 }
 
 export function Board({
@@ -22,9 +23,11 @@ export function Board({
   lastMove,
   inCheckSquare,
   onSquareClick,
+  faceToFace,
 }: BoardProps) {
   const files = orientation === 'w' ? FILES : [...FILES].reverse()
   const ranks = orientation === 'w' ? [...RANKS].reverse() : RANKS
+  const topColor: Color = orientation === 'w' ? 'b' : 'w'
 
   const squareAt = (file: string, rank: string): BoardPiece => {
     const rankIndex = 8 - Number(rank)
@@ -71,7 +74,13 @@ export function Board({
               )}
               {piece && (
                 <span
-                  className={`piece ${piece.color === 'w' ? 'piece-white' : 'piece-black'}`}
+                  className={[
+                    'piece',
+                    piece.color === 'w' ? 'piece-white' : 'piece-black',
+                    faceToFace && piece.color === topColor ? 'piece-flipped' : '',
+                  ]
+                    .filter(Boolean)
+                    .join(' ')}
                 >
                   {PIECE_UNICODE[piece.color][piece.type]}
                 </span>

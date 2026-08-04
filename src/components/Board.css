@@ -72,6 +72,14 @@
   filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.35));
 }
 
+.piece-flipped {
+  transform: rotate(180deg);
+}
+
+.square.selected .piece-flipped {
+  transform: rotate(180deg) scale(1.08);
+}
+
 .move-hint {
   position: absolute;
   width: 28%;

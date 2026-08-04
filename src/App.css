@@ -115,6 +115,40 @@
   font-weight: 500;
 }
 
+.local-options {
+  display: flex;
+  flex-direction: column;
+}
+
+.toggle-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  font-size: 0.85rem;
+  cursor: pointer;
+}
+
+.toggle-row input[type='checkbox'] {
+  accent-color: var(--accent);
+  width: 1.05rem;
+  height: 1.05rem;
+  margin-top: 0.1rem;
+  flex-shrink: 0;
+  cursor: pointer;
+}
+
+.toggle-row span {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.toggle-row small {
+  color: var(--text-dim);
+  font-size: 0.75rem;
+  font-weight: 400;
+}
+
 .status-bar {
   display: flex;
   align-items: center;
