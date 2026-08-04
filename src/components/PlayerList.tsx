@@ -1,14 +1,23 @@
-export type PlayerSummary = {
-  name: string
+export type RecordTotals = {
   wins: number
   losses: number
   draws: number
+}
+
+export type PlayerSummary = {
+  name: string
+  ai: RecordTotals
+  local: RecordTotals
 }
 
 type PlayerListProps = {
   players: PlayerSummary[]
   onSelect: (name: string) => void
   activeName?: string
+}
+
+function hasGames(totals: RecordTotals): boolean {
+  return totals.wins + totals.losses + totals.draws > 0
 }
 
 export function PlayerList({ players, onSelect, activeName }: PlayerListProps) {
@@ -26,9 +35,16 @@ export function PlayerList({ players, onSelect, activeName }: PlayerListProps) {
               onClick={() => onSelect(player.name)}
             >
               <span className="player-list-name">{player.name}</span>
-              <span className="player-list-stat">
-                {player.wins}승 {player.losses}패 {player.draws}무
-              </span>
+              {hasGames(player.ai) && (
+                <span className="player-list-stat">
+                  AI {player.ai.wins}승 {player.ai.losses}패 {player.ai.draws}무
+                </span>
+              )}
+              {hasGames(player.local) && (
+                <span className="player-list-stat">
+                  2인 {player.local.wins}승 {player.local.losses}패 {player.local.draws}무
+                </span>
+              )}
             </button>
           </li>
         ))}

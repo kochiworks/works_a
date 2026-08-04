@@ -184,9 +184,10 @@ export function AiSettings({
           {hasLocalRecord && localPairRecord && (
             <div className="local-record-row">
               <span>
-                {localPairRecord.names[0]} {localPairRecord.wins[localPairRecord.names[0]] ?? 0}승 ·{' '}
-                {localPairRecord.names[1]} {localPairRecord.wins[localPairRecord.names[1]] ?? 0}승 ·{' '}
-                무 {localPairRecord.draws}
+                {localPairRecord.names[0]}: {localPairRecord.wins[localPairRecord.names[0]] ?? 0}승{' '}
+                {localPairRecord.wins[localPairRecord.names[1]] ?? 0}패 {localPairRecord.draws}무 ·{' '}
+                {localPairRecord.names[1]}: {localPairRecord.wins[localPairRecord.names[1]] ?? 0}승{' '}
+                {localPairRecord.wins[localPairRecord.names[0]] ?? 0}패 {localPairRecord.draws}무
               </span>
               <button type="button" className="record-reset-btn" onClick={onResetLocalPairRecord}>
                 초기화

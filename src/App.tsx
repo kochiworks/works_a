@@ -119,18 +119,24 @@ function App() {
     const ensure = (name: string) => {
       let entry = summaries.get(name)
       if (!entry) {
-        entry = { name, wins: 0, losses: 0, draws: 0 }
+        entry = {
+          name,
+          ai: { wins: 0, losses: 0, draws: 0 },
+          local: { wins: 0, losses: 0, draws: 0 },
+        }
         summaries.set(name, entry)
       }
       return entry
     }
 
+    // AI-mode and local 2-player records are tracked independently per player;
+    // they are never summed together, only shown side by side.
     for (const [name, botRecords] of Object.entries(aiRecordsState)) {
       const entry = ensure(name)
       for (const record of Object.values(botRecords)) {
-        entry.wins += record.wins
-        entry.losses += record.losses
-        entry.draws += record.draws
+        entry.ai.wins += record.wins
+        entry.ai.losses += record.losses
+        entry.ai.draws += record.draws
       }
     }
 
@@ -138,17 +144,20 @@ function App() {
       const [nameA, nameB] = pair.names
       const entryA = ensure(nameA)
       const entryB = ensure(nameB)
-      entryA.wins += pair.wins[nameA] ?? 0
-      entryA.losses += pair.wins[nameB] ?? 0
-      entryA.draws += pair.draws
-      entryB.wins += pair.wins[nameB] ?? 0
-      entryB.losses += pair.wins[nameA] ?? 0
-      entryB.draws += pair.draws
+      entryA.local.wins += pair.wins[nameA] ?? 0
+      entryA.local.losses += pair.wins[nameB] ?? 0
+      entryA.local.draws += pair.draws
+      entryB.local.wins += pair.wins[nameB] ?? 0
+      entryB.local.losses += pair.wins[nameA] ?? 0
+      entryB.local.draws += pair.draws
     }
 
+    const totalGames = (p: PlayerSummary) =>
+      p.ai.wins + p.ai.losses + p.ai.draws + p.local.wins + p.local.losses + p.local.draws
+
     return Array.from(summaries.values()).sort((a, b) => {
-      const gamesA = a.wins + a.losses + a.draws
-      const gamesB = b.wins + b.losses + b.draws
+      const gamesA = totalGames(a)
+      const gamesB = totalGames(b)
       if (gamesB !== gamesA) return gamesB - gamesA
       return a.name.localeCompare(b.name, 'ko')
     })
