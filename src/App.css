@@ -38,6 +38,77 @@
   align-self: stretch;
 }
 
+.ai-settings {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  background: var(--panel-bg);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 0.6rem 0.9rem;
+}
+
+.mode-toggle,
+.color-choice {
+  display: flex;
+  gap: 0.4rem;
+  align-items: center;
+}
+
+.color-choice {
+  font-size: 0.85rem;
+  color: var(--text-dim);
+}
+
+.mode-toggle button,
+.color-choice button {
+  flex: 1;
+  min-height: 2.25rem;
+  padding: 0.4rem 0.6rem;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--text);
+  cursor: pointer;
+  font-size: 0.85rem;
+}
+
+.color-choice button {
+  flex: 0 0 auto;
+  min-width: 3.2rem;
+}
+
+.mode-toggle button.active,
+.color-choice button.active {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #12190f;
+  font-weight: 600;
+}
+
+.ai-options {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.level-picker {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  font-size: 0.85rem;
+}
+
+.level-picker input[type='range'] {
+  width: 100%;
+  accent-color: var(--accent);
+}
+
+.ai-thinking {
+  color: var(--accent);
+  font-weight: 500;
+}
+
 .status-bar {
   display: flex;
   align-items: center;

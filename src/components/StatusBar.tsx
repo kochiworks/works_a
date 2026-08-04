@@ -21,9 +21,10 @@ function statusText(status: GameStatus, turn: Color): string {
 type StatusBarProps = {
   status: GameStatus
   turn: Color
+  aiThinking?: boolean
 }
 
-export function StatusBar({ status, turn }: StatusBarProps) {
+export function StatusBar({ status, turn, aiThinking }: StatusBarProps) {
   const isAlert = status === 'checkmate' || status === 'check'
   return (
     <div className={`status-bar ${isAlert ? 'alert' : ''}`}>
@@ -32,6 +33,7 @@ export function StatusBar({ status, turn }: StatusBarProps) {
         aria-hidden="true"
       />
       {statusText(status, turn)}
+      {aiThinking && <span className="ai-thinking"> · AI 생각 중...</span>}
     </div>
   )
 }

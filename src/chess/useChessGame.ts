@@ -73,7 +73,7 @@ export function useChessGame() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [game, version])
 
-  const commitMove = useCallback(
+  const makeMove = useCallback(
     (from: Square, to: Square, promotion?: PieceSymbol) => {
       const result = game.move({ from, to, promotion })
       if (result) {
@@ -111,7 +111,7 @@ export function useChessGame() {
             return
           }
 
-          commitMove(selected, square)
+          makeMove(selected, square)
           return
         }
       }
@@ -123,15 +123,15 @@ export function useChessGame() {
         setSelected(null)
       }
     },
-    [game, selected, pendingPromotion, commitMove],
+    [game, selected, pendingPromotion, makeMove],
   )
 
   const resolvePromotion = useCallback(
     (piece: PieceSymbol) => {
       if (!pendingPromotion) return
-      commitMove(pendingPromotion.from, pendingPromotion.to, piece)
+      makeMove(pendingPromotion.from, pendingPromotion.to, piece)
     },
-    [pendingPromotion, commitMove],
+    [pendingPromotion, makeMove],
   )
 
   const cancelPromotion = useCallback(() => {
@@ -163,6 +163,7 @@ export function useChessGame() {
 
   return {
     board: game.board(),
+    fen: game.fen(),
     turn: game.turn(),
     selected,
     legalTargets,
@@ -176,10 +177,12 @@ export function useChessGame() {
     canUndo: game.history().length > 0,
     isGameOver: game.isGameOver(),
     trySelectOrMove,
+    makeMove,
     resolvePromotion,
     cancelPromotion,
     undo,
     reset,
     flipBoard,
+    setOrientation,
   }
 }
