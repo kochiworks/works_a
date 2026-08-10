@@ -1,4 +1,27 @@
+import type { PieceSymbol, Square } from 'chess.js'
+
 export type TutorialTier = 'beginner' | 'intermediate' | 'advanced'
+
+export type TutorialTaskKind = 'move' | 'select' | 'freeform'
+
+export type AcceptedMove = {
+  from: Square
+  /** Omit to accept any legal destination from `from`. */
+  to?: Square
+  promotion?: PieceSymbol
+}
+
+export type TutorialTask = {
+  kind: TutorialTaskKind
+  /** Goal shown to the player above the practice board. */
+  instruction: string
+  /** For kind 'move': the move(s) considered correct. */
+  accepted?: AcceptedMove[]
+  /** For kind 'select': the square(s) the player should click. */
+  targetSquares?: Square[]
+  successMessage: string
+  wrongMessage?: string
+}
 
 export type TutorialLesson = {
   /** 1-based level number within its tier. */
@@ -6,10 +29,12 @@ export type TutorialLesson = {
   title: string
   summary: string
   points: string[]
-  /** Position shown on the read-only demo board. */
+  /** Starting position for both the illustration and the practice task. */
   fen: string
   /** Short caption describing what the demo board illustrates. */
   caption: string
+  /** Interactive mini-game task for this lesson. */
+  task: TutorialTask
 }
 
 export type TutorialTierData = {
@@ -43,6 +68,12 @@ export const TUTORIAL_TIERS: TutorialTierData[] = [
         ],
         fen: 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1',
         caption: '체스 시작 위치. 앞줄은 폰 8개, 뒷줄은 주요 기물 8개입니다.',
+        task: {
+          kind: 'select',
+          instruction: '🎯 백 퀸이 있는 칸(자신과 같은 색 칸)을 클릭해보세요.',
+          targetSquares: ['d1'],
+          successMessage: '정답입니다! 백 퀸은 밝은 칸 d1에서 시작합니다.',
+        },
       },
       {
         level: 2,
@@ -56,6 +87,12 @@ export const TUTORIAL_TIERS: TutorialTierData[] = [
         ],
         fen: '6k1/8/8/3p4/4P3/8/8/6K1 w - - 0 1',
         caption: '백 폰(e4)은 흑 폰(d5)을 대각선으로 잡을 수 있지만, 정면으로는 잡을 수 없습니다.',
+        task: {
+          kind: 'move',
+          instruction: '🎯 백 폰(e4)을 전진시키거나 대각선으로 흑 폰을 잡아보세요.',
+          accepted: [{ from: 'e4', to: 'e5' }, { from: 'e4', to: 'd5' }],
+          successMessage: '좋습니다! 폰의 이동과 대각선 포획을 모두 확인했습니다.',
+        },
       },
       {
         level: 3,
@@ -69,6 +106,12 @@ export const TUTORIAL_TIERS: TutorialTierData[] = [
         ],
         fen: '6k1/8/8/8/5B2/2N5/8/6K1 w - - 0 1',
         caption: '나이트(c3)는 여러 방향으로 뛸 수 있고, 비숍(f4)은 대각선을 따라 이동합니다.',
+        task: {
+          kind: 'move',
+          instruction: '🎯 나이트(c3) 또는 비숍(f4)을 원하는 곳으로 움직여보세요.',
+          accepted: [{ from: 'c3' }, { from: 'f4' }],
+          successMessage: '잘했습니다! 나이트와 비숍의 이동 방식을 직접 확인했습니다.',
+        },
       },
       {
         level: 4,
@@ -82,6 +125,12 @@ export const TUTORIAL_TIERS: TutorialTierData[] = [
         ],
         fen: '6k1/8/8/8/3Q4/8/8/3R2K1 w - - 0 1',
         caption: '룩(d1)은 직선으로, 퀸(d4)은 직선과 대각선 모두로 움직일 수 있습니다.',
+        task: {
+          kind: 'move',
+          instruction: '🎯 룩(d1), 퀸(d4), 킹(g1) 중 하나를 자유롭게 움직여보세요.',
+          accepted: [{ from: 'd1' }, { from: 'd4' }, { from: 'g1' }],
+          successMessage: '좋습니다! 세 기물의 이동 범위 차이를 확인했습니다.',
+        },
       },
       {
         level: 5,
@@ -95,6 +144,13 @@ export const TUTORIAL_TIERS: TutorialTierData[] = [
         ],
         fen: '6k1/5ppp/8/8/8/8/8/R5K1 w - - 0 1',
         caption: '백이 Ra8을 두면 체크메이트입니다. 흑 킹은 자신의 폰들에 막혀 도망갈 곳이 없습니다.',
+        task: {
+          kind: 'move',
+          instruction: '🎯 백 룩(a1)을 움직여 체크메이트를 완성해보세요.',
+          accepted: [{ from: 'a1', to: 'a8' }],
+          successMessage: '체크메이트 성공! 흑 킹은 자신의 폰에 막혀 도망갈 곳이 없었습니다.',
+          wrongMessage: '체크메이트가 아닙니다. 흑 킹이 완전히 갇히는 칸을 다시 찾아보세요.',
+        },
       },
     ],
   },
@@ -115,6 +171,13 @@ export const TUTORIAL_TIERS: TutorialTierData[] = [
         ],
         fen: 'r3k2r/8/8/8/8/8/8/R3K2R w KQkq - 0 1',
         caption: '양쪽 모두 킹과 룩이 원래 자리에 있어 캐슬링 조건을 갖춘 상태입니다.',
+        task: {
+          kind: 'move',
+          instruction: '🎯 백 킹으로 킹사이드 캐슬링을 해보세요 (킹을 e1에서 g1로 클릭).',
+          accepted: [{ from: 'e1', to: 'g1' }],
+          successMessage: '캐슬링 성공! 킹은 안전한 곳으로, 룩은 중앙으로 이동했습니다.',
+          wrongMessage: '캐슬링이 아닙니다. 킹(e1)을 클릭해 g1로 이동해보세요.',
+        },
       },
       {
         level: 2,
@@ -128,6 +191,13 @@ export const TUTORIAL_TIERS: TutorialTierData[] = [
         ],
         fen: '6k1/8/8/3pP3/8/8/8/6K1 w - d6 0 1',
         caption: '흑이 방금 d7-d5로 두 칸 전진했습니다. 백은 exd6 앙파상으로 잡을 수 있습니다.',
+        task: {
+          kind: 'move',
+          instruction: '🎯 백 폰으로 앙파상 캡처를 해보세요 (e5 → d6).',
+          accepted: [{ from: 'e5', to: 'd6' }],
+          successMessage: '앙파상 성공! 흑 폰이 스쳐 지나가는 순간을 정확히 잡아냈습니다.',
+          wrongMessage: '앙파상이 아닙니다. 폰(e5)을 클릭해 대각선 뒤 d6으로 이동해보세요.',
+        },
       },
       {
         level: 3,
@@ -141,6 +211,12 @@ export const TUTORIAL_TIERS: TutorialTierData[] = [
         ],
         fen: '6k1/4P3/8/8/8/8/8/6K1 w - - 0 1',
         caption: '백 폰이 e8에 도달하면 퀸(또는 다른 기물)으로 승급합니다.',
+        task: {
+          kind: 'move',
+          instruction: '🎯 백 폰을 승급시켜보세요 (e7 → e8). 원하는 기물을 선택할 수 있습니다.',
+          accepted: [{ from: 'e7', to: 'e8' }],
+          successMessage: '승급 성공! 폰이 원하는 기물로 다시 태어났습니다.',
+        },
       },
       {
         level: 4,
@@ -154,6 +230,11 @@ export const TUTORIAL_TIERS: TutorialTierData[] = [
         ],
         fen: 'r1bqkbnr/pppp1ppp/2n5/1B2p3/4P3/5N2/PPPP1PPP/RNBQK2R b KQkq - 3 3',
         caption: '루이 로페즈 오프닝: 백이 중앙을 잡고 나이트와 비숍을 빠르게 개발했습니다.',
+        task: {
+          kind: 'freeform',
+          instruction: '🎯 흑의 입장에서 오프닝 원칙에 맞는 자연스러운 수를 하나 두어보세요.',
+          successMessage: '좋은 수입니다! 오프닝에서는 중앙 장악과 기물 개발이 최우선입니다.',
+        },
       },
       {
         level: 5,
@@ -167,6 +248,12 @@ export const TUTORIAL_TIERS: TutorialTierData[] = [
         ],
         fen: '7k/8/8/8/8/3B2N1/1P3R2/4Q1K1 w - - 0 1',
         caption: '퀸(9) > 룩(5) > 비숍·나이트(3) > 폰(1) 순으로 가치가 커집니다.',
+        task: {
+          kind: 'select',
+          instruction: '🎯 가장 가치가 높은 기물이 있는 칸을 클릭해보세요.',
+          targetSquares: ['e1'],
+          successMessage: '정답입니다! 퀸(e1)은 9점으로 가장 가치가 높은 기물입니다.',
+        },
       },
       {
         level: 6,
@@ -178,8 +265,15 @@ export const TUTORIAL_TIERS: TutorialTierData[] = [
           '폰, 비숍, 룩, 퀸도 모두 포크를 만들 수 있습니다.',
           '내 기물들이 나이트가 뛰어들 수 있는 칸에 함께 놓이지 않도록 주의합니다.',
         ],
-        fen: 'r3k3/2N5/8/8/8/8/8/6K1 b - - 0 1',
-        caption: '백 나이트(c7)가 흑 킹(e8)과 룩(a8)을 동시에 공격하는 "로열 포크"입니다.',
+        fen: 'r3k3/8/8/1N6/8/8/8/6K1 w - - 0 1',
+        caption: '백 나이트(b5)를 c7로 옮기면 흑 킹(e8)과 룩(a8)을 동시에 공격하는 "로열 포크"가 됩니다.',
+        task: {
+          kind: 'move',
+          instruction: '🎯 나이트를 움직여 흑 킹과 룩을 동시에 공격하는 포크를 만들어보세요.',
+          accepted: [{ from: 'b5', to: 'c7' }],
+          successMessage: '포크 성공! 나이트가 킹과 룩을 동시에 노립니다. 다음 수에 룩을 잡을 수 있습니다.',
+          wrongMessage: '포크가 아직 아닙니다. 나이트(b5)를 c7로 이동해보세요.',
+        },
       },
       {
         level: 7,
@@ -191,8 +285,14 @@ export const TUTORIAL_TIERS: TutorialTierData[] = [
           '핀에 걸린 기물은 방어 능력이 제한되므로 추가 공격의 좋은 표적이 됩니다.',
           '내 기물이 킹과 같은 직선·대각선에 놓이지 않도록 주의합니다.',
         ],
-        fen: '6k1/8/4n3/8/2B5/8/8/6K1 w - - 0 1',
+        fen: '6k1/8/4n3/8/2B5/8/8/6K1 b - - 0 1',
         caption: '백 비숍(c4)이 흑 나이트(e6)를 흑 킹(g8)에 절대 핀으로 묶고 있습니다.',
+        task: {
+          kind: 'select',
+          instruction: '🎯 핀에 걸린 흑 나이트(e6)를 클릭해서 이동 가능한 칸이 있는지 확인해보세요.',
+          targetSquares: ['e6'],
+          successMessage: '정답입니다! 나이트를 선택해도 갈 수 있는 칸이 없습니다 — 움직이면 킹이 체크에 노출되기 때문입니다.',
+        },
       },
       {
         level: 8,
@@ -205,7 +305,13 @@ export const TUTORIAL_TIERS: TutorialTierData[] = [
           '핀과 스큐어는 형태가 비슷하니 "어느 기물이 앞에 있는가"로 구분하세요.',
         ],
         fen: '4q3/8/8/8/4k3/8/8/4R2K b - - 0 1',
-        caption: '백 룩(e1)의 체크에 흑 킹(e5)이 비켜나면, 뒤의 흑 퀸(e8)을 잡을 수 있습니다.',
+        caption: '백 룩(e1)의 체크에 흑 킹(e4)이 비켜나면, 뒤의 흑 퀸(e8)을 잡을 수 있습니다.',
+        task: {
+          kind: 'move',
+          instruction: '🎯 체크를 피해 흑 킹을 이동시켜보세요.',
+          accepted: [{ from: 'e4' }],
+          successMessage: '체크를 피했습니다! 하지만 이제 백 룩이 뒤에 있던 퀸을 잡을 수 있습니다 — 이것이 스큐어입니다.',
+        },
       },
       {
         level: 9,
@@ -219,6 +325,13 @@ export const TUTORIAL_TIERS: TutorialTierData[] = [
         ],
         fen: '6k1/5ppp/8/8/8/8/8/4Q1K1 w - - 0 1',
         caption: '백 퀸이 e8로 이동하면 체크메이트! 흑 킹은 f8, g7, h8 모두 갈 수 없습니다.',
+        task: {
+          kind: 'move',
+          instruction: '🎯 백 퀸으로 체크메이트를 완성해보세요.',
+          accepted: [{ from: 'e1', to: 'e8' }],
+          successMessage: '체크메이트! 백랭크 약점을 정확히 파고들었습니다.',
+          wrongMessage: '체크메이트가 아닙니다. 퀸(e1)을 e8로 이동해보세요.',
+        },
       },
       {
         level: 10,
@@ -232,6 +345,12 @@ export const TUTORIAL_TIERS: TutorialTierData[] = [
         ],
         fen: '8/8/4k2R/R7/8/8/8/6K1 b - - 0 1',
         caption: '백 룩(h6)이 체크를 걸고, 룩(a5)이 5랭크를 막아 흑 킹이 7랭크로 밀려납니다.',
+        task: {
+          kind: 'move',
+          instruction: '🎯 체크를 피해 킹을 이동시켜보세요. 어느 칸으로 가도 다음 랭크로 밀려납니다.',
+          accepted: [{ from: 'e6' }],
+          successMessage: '킹이 7랭크로 밀려났습니다! 다음 차례에 다른 룩이 다시 체크를 걸며 사다리를 이어갑니다.',
+        },
       },
     ],
   },
@@ -252,6 +371,12 @@ export const TUTORIAL_TIERS: TutorialTierData[] = [
         ],
         fen: '3q2k1/8/8/3N4/8/8/8/3R2K1 w - - 0 1',
         caption: '백 나이트(d5)가 비키면 뒤에 있던 룩(d1)이 흑 퀸(d8)을 공격하게 됩니다.',
+        task: {
+          kind: 'move',
+          instruction: '🎯 나이트를 움직여 뒤에 있는 룩의 공격을 열어보세요.',
+          accepted: [{ from: 'd5' }],
+          successMessage: '디스커버드 어택 성공! 룩이 이제 흑 퀸을 직접 노립니다.',
+        },
       },
       {
         level: 2,
@@ -265,6 +390,12 @@ export const TUTORIAL_TIERS: TutorialTierData[] = [
         ],
         fen: '7k/5N2/8/8/8/2B5/8/6K1 b - - 0 1',
         caption: '나이트(f7)와 비숍(c3)이 동시에 흑 킹(h8)을 체크하는 더블 체크입니다.',
+        task: {
+          kind: 'move',
+          instruction: '🎯 더블 체크입니다! 킹을 이동하는 것만이 유일한 방법입니다.',
+          accepted: [{ from: 'h8' }],
+          successMessage: '정확합니다! 더블 체크에서는 오직 킹을 움직이는 것만 가능합니다.',
+        },
       },
       {
         level: 3,
@@ -277,7 +408,14 @@ export const TUTORIAL_TIERS: TutorialTierData[] = [
           '상대 기물이 "한 가지 역할을 여러 개 맡고 있는지" 살펴보면 발견하기 쉽습니다.',
         ],
         fen: '3q2k1/5ppp/8/Q7/8/8/8/4R1K1 w - - 0 1',
-        caption: '백 퀸(a5)이 대각선으로 흑 퀸(d8)을 노립니다. 흑 퀸이 물러나면 e8 체크메이트가 열립니다.',
+        caption: '백 퀸(a5)이 대각선으로 흑 퀸(d8)을 노립니다. 흑 퀸을 제거하면 e8 체크메이트가 열립니다.',
+        task: {
+          kind: 'move',
+          instruction: '🎯 백 퀸으로 흑 퀸을 잡아 방어 기물을 제거해보세요 (체크메이트!).',
+          accepted: [{ from: 'a5', to: 'd8' }],
+          successMessage: '체크메이트! 유일한 방어 기물을 제거하자 백랭크 메이트가 완성됐습니다.',
+          wrongMessage: '아직입니다. 퀸(a5)으로 흑 퀸(d8)을 잡아보세요.',
+        },
       },
       {
         level: 4,
@@ -290,7 +428,14 @@ export const TUTORIAL_TIERS: TutorialTierData[] = [
           '희생의 대가로 얻는 이득이 충분한지 항상 확인하고 시도합니다.',
         ],
         fen: '6k1/5p1p/8/3Q1N2/8/8/8/6K1 w - - 0 1',
-        caption: '백 퀸이 g8 주변으로 침투해 킹을 유인하면, 나이트(f5)가 지키는 칸으로 킹을 몰 수 있습니다.',
+        caption: '백 퀸이 g8 근처 약점(d8)으로 침투하면, 나이트(f5)가 지키는 칸들 때문에 체크메이트가 됩니다.',
+        task: {
+          kind: 'move',
+          instruction: '🎯 백 퀸을 d8로 이동시켜 체크메이트를 만들어보세요.',
+          accepted: [{ from: 'd5', to: 'd8' }],
+          successMessage: '체크메이트! 퀸이 나이트의 지원을 받아 킹을 궁지로 몰았습니다.',
+          wrongMessage: '체크메이트가 아닙니다. 퀸(d5)을 d8로 이동해보세요.',
+        },
       },
       {
         level: 5,
@@ -304,6 +449,13 @@ export const TUTORIAL_TIERS: TutorialTierData[] = [
         ],
         fen: '6k1/8/3r4/8/1N6/8/8/3R2K1 w - - 0 1',
         caption: '나이트가 d5로 뛰어들면 흑 룩(d6)의 방어선을 차단해, 백 룩(d1)이 배후를 노릴 수 있습니다.',
+        task: {
+          kind: 'move',
+          instruction: '🎯 나이트를 움직여 흑 룩의 방어선을 차단해보세요.',
+          accepted: [{ from: 'b4', to: 'd5' }],
+          successMessage: '인터퍼런스 성공! 흑 룩의 방어선이 나이트에 막혔습니다.',
+          wrongMessage: '아직 차단되지 않았습니다. 나이트(b4)를 d5로 이동해보세요.',
+        },
       },
       {
         level: 6,
@@ -315,8 +467,15 @@ export const TUTORIAL_TIERS: TutorialTierData[] = [
           '흔히 퀸 희생 등으로 상대 킹을 코너로 몰아넣은 뒤에 완성됩니다.',
           '체스 역사상 가장 유명한 메이트 패턴 중 하나입니다.',
         ],
-        fen: '6rk/5Npp/8/8/8/8/8/6K1 b - - 0 1',
-        caption: '흑 킹(h8)이 자신의 룩(g8)과 폰(g7, h7)에 둘러싸여 나이트(f7) 체크메이트를 피할 수 없습니다.',
+        fen: '6rk/6pp/7N/8/8/8/8/6K1 w - - 0 1',
+        caption: '흑 킹(h8)이 자신의 룩(g8)과 폰(g7, h7)에 둘러싸여 있습니다. 나이트를 f7로 옮기면 체크메이트!',
+        task: {
+          kind: 'move',
+          instruction: '🎯 나이트를 움직여 스모더드 메이트를 완성해보세요.',
+          accepted: [{ from: 'h6', to: 'f7' }],
+          successMessage: '체크메이트! 킹이 자신의 기물에 둘러싸여 도망갈 곳이 없었습니다.',
+          wrongMessage: '체크메이트가 아닙니다. 나이트(h6)를 f7로 이동해보세요.',
+        },
       },
       {
         level: 7,
@@ -328,8 +487,15 @@ export const TUTORIAL_TIERS: TutorialTierData[] = [
           '룩(또는 퀸)이 열려 있는 파일·랭크를 따라 체크메이트를 완성합니다.',
           '나이트와 룩의 협공 패턴을 익히면 다양한 실전 국면에서 응용할 수 있습니다.',
         ],
-        fen: '7k/4N1p1/8/8/8/8/8/K6R b - - 0 1',
-        caption: '나이트(e7)가 g8을 막고 흑 폰(g7)이 스스로 g7을 막은 사이, 룩(h1)이 h파일 체크메이트를 완성합니다.',
+        fen: '7k/4N1p1/8/8/8/8/8/K2R4 w - - 0 1',
+        caption: '나이트(e7)가 g8을 지키고 흑 폰(g7)이 스스로 g7을 막고 있습니다. 룩을 h파일로 옮기면 체크메이트!',
+        task: {
+          kind: 'move',
+          instruction: '🎯 룩을 h1로 이동시켜 체크메이트를 완성해보세요.',
+          accepted: [{ from: 'd1', to: 'h1' }],
+          successMessage: '체크메이트! 나이트와 룩이 협공해 아나스타샤 메이트를 완성했습니다.',
+          wrongMessage: '체크메이트가 아닙니다. 룩(d1)을 h1로 이동해보세요.',
+        },
       },
       {
         level: 8,
@@ -343,6 +509,12 @@ export const TUTORIAL_TIERS: TutorialTierData[] = [
         ],
         fen: '6k1/1p3p2/3p4/7P/8/2P5/P1P5/6K1 w - - 0 1',
         caption: '백은 c2·c3에 더블 폰, a2에 고립된 폰이 있고, h5 폰은 막을 흑 폰이 없는 통과한 폰입니다.',
+        task: {
+          kind: 'select',
+          instruction: '🎯 옆 파일에 동료 폰이 없는, 고립된 폰을 클릭해보세요.',
+          targetSquares: ['a2'],
+          successMessage: '정답입니다! a2 폰은 b파일에 동료가 없어 고립된 폰입니다.',
+        },
       },
       {
         level: 9,
@@ -356,6 +528,12 @@ export const TUTORIAL_TIERS: TutorialTierData[] = [
         ],
         fen: 'r5k1/pppp1ppp/8/8/8/8/PPPP1PPP/4R1K1 w - - 0 1',
         caption: 'e파일에는 양쪽 모두 폰이 없습니다. 백 룩(e1)이 이 오픈 파일을 완전히 장악하고 있습니다.',
+        task: {
+          kind: 'move',
+          instruction: '🎯 백 룩을 오픈 파일(e파일)을 따라 움직여보세요.',
+          accepted: [{ from: 'e1' }],
+          successMessage: '좋습니다! 오픈 파일 위의 룩은 상대 진영까지 자유롭게 이동할 수 있습니다.',
+        },
       },
       {
         level: 10,
@@ -369,6 +547,12 @@ export const TUTORIAL_TIERS: TutorialTierData[] = [
         ],
         fen: '6k1/pp3ppp/8/3N4/4P3/8/PP3PPP/6K1 w - - 0 1',
         caption: '흑은 c·e 파일 폰이 없어, 백 나이트(d5)를 폰으로 쫓아낼 방법이 없는 완벽한 아웃포스트입니다.',
+        task: {
+          kind: 'move',
+          instruction: '🎯 나이트(d5)를 자유롭게 움직여 활동 범위를 확인해보세요.',
+          accepted: [{ from: 'd5' }],
+          successMessage: '아웃포스트에 자리 잡은 나이트는 이렇게 상대 진영 깊숙이 영향력을 행사합니다.',
+        },
       },
       {
         level: 11,
@@ -382,6 +566,11 @@ export const TUTORIAL_TIERS: TutorialTierData[] = [
         ],
         fen: '8/4k3/8/4K3/4P3/8/8/8 w - - 0 1',
         caption: '백 킹(e5)과 흑 킹(e7)이 한 칸을 사이에 두고 마주하는 정면 오퍼지션 상황입니다.',
+        task: {
+          kind: 'freeform',
+          instruction: '🎯 백 킹이나 폰을 자유롭게 움직여 오퍼지션이 어떻게 작동하는지 살펴보세요.',
+          successMessage: '오퍼지션 다툼에서는 한 수 한 수가 승부를 가릅니다. 계속 시도하며 감을 익혀보세요.',
+        },
       },
       {
         level: 12,
@@ -395,6 +584,11 @@ export const TUTORIAL_TIERS: TutorialTierData[] = [
         ],
         fen: '4k3/8/8/8/3KP3/8/8/8 w - - 0 1',
         caption: '백 킹이 e4 폰을 호위하며 핵심 칸(d5·e5·f5 등)으로 전진할 수 있는지가 승부를 가릅니다.',
+        task: {
+          kind: 'freeform',
+          instruction: '🎯 백 킹을 핵심 칸 쪽으로 전진시켜보세요.',
+          successMessage: '좋습니다! 킹이 핵심 칸에 먼저 도달할수록 폰의 승급 가능성이 커집니다.',
+        },
       },
       {
         level: 13,
@@ -408,6 +602,11 @@ export const TUTORIAL_TIERS: TutorialTierData[] = [
         ],
         fen: '4k3/8/r7/4K3/4P3/8/8/R7 w - - 0 1',
         caption: '흑 킹(e8)은 승급 랭크에서 대기하고, 흑 룩(a6)이 6랭크를 가로막아 백의 전진을 저지합니다.',
+        task: {
+          kind: 'freeform',
+          instruction: '🎯 백 기물을 자유롭게 움직여 필리도어 방어가 왜 견고한지 살펴보세요.',
+          successMessage: '수비 측의 6랭크 방어가 백의 전진을 계속 가로막는 것을 확인했습니다.',
+        },
       },
       {
         level: 14,
@@ -421,6 +620,11 @@ export const TUTORIAL_TIERS: TutorialTierData[] = [
         ],
         fen: '8/4PK1k/8/8/8/8/1r6/4R3 w - - 0 1',
         caption: '백 폰(e7)이 승급 직전이고 킹(f7)이 이를 호위합니다. 룩(e1)이 다리를 놓으면 승급이 확정됩니다.',
+        task: {
+          kind: 'freeform',
+          instruction: '🎯 백 룩을 자유롭게 움직여 "다리 놓기" 아이디어를 살펴보세요.',
+          successMessage: '룩을 4랭크로 옮기면 흑 룩의 체크를 차단하는 다리가 완성됩니다.',
+        },
       },
       {
         level: 15,
@@ -434,6 +638,11 @@ export const TUTORIAL_TIERS: TutorialTierData[] = [
         ],
         fen: 'r1bqk2r/pppp1ppp/2n2n2/2b1p3/2B1P3/2PP1N2/PP3PPP/RNBQK2R b KQkq - 0 5',
         caption: '이탈리안 게임 오프닝: 양측 모두 중앙을 잡고 기물을 개발했습니다. 다음 계획은 무엇일까요?',
+        task: {
+          kind: 'freeform',
+          instruction: '🎯 흑의 입장에서 형세를 판단하고, 계획에 맞는 수를 하나 두어보세요.',
+          successMessage: '좋습니다! 지금까지 배운 원칙들을 종합해 스스로 계획을 세워본 것이 가장 중요합니다.',
+        },
       },
     ],
   },

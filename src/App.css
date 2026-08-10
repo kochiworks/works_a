@@ -1012,6 +1012,77 @@
   cursor: default;
 }
 
+/* Tutorial mini-game practice */
+
+.lesson-board-panel {
+  flex: 1 1 320px;
+  max-width: 380px;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.lesson-practice {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.lesson-task-instruction {
+  margin: 0;
+  padding: 0.5rem 0.7rem;
+  border-radius: 8px;
+  background: rgba(106, 153, 85, 0.15);
+  border: 1px solid var(--accent);
+  font-size: 0.85rem;
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+.lesson-practice-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.6rem;
+  min-height: 2.2rem;
+}
+
+.lesson-feedback {
+  margin: 0;
+  font-size: 0.82rem;
+  font-weight: 600;
+  line-height: 1.4;
+  flex: 1;
+}
+
+.lesson-feedback-placeholder {
+  flex: 1;
+}
+
+.lesson-feedback-success {
+  color: var(--accent);
+}
+
+.lesson-feedback-wrong {
+  color: #ff8a85;
+}
+
+.lesson-retry-btn {
+  flex: 0 0 auto;
+  padding: 0.4rem 0.7rem;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--panel-bg);
+  color: var(--text);
+  cursor: pointer;
+  font-size: 0.8rem;
+  white-space: nowrap;
+}
+
+.lesson-retry-btn:hover {
+  border-color: var(--accent);
+}
+
 @media (max-width: 760px) {
   .rules-with-board {
     flex-direction: column;
@@ -1025,5 +1096,11 @@
 
   .lesson-detail {
     flex-direction: column;
+  }
+
+  .lesson-board-panel {
+    max-width: 100%;
+    align-self: center;
+    width: min(380px, 100%);
   }
 }

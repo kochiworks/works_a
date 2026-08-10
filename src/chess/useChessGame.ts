@@ -19,8 +19,8 @@ export type GameStatus =
   | 'stalemate'
   | 'draw'
 
-export function useChessGame(onMove?: (move: Move) => void) {
-  const gameRef = useRef(new Chess())
+export function useChessGame(onMove?: (move: Move) => void, initialFen?: string) {
+  const gameRef = useRef(new Chess(initialFen))
   const [version, setVersion] = useState(0)
   const [selected, setSelected] = useState<Square | null>(null)
   const [lastMove, setLastMove] = useState<{ from: Square; to: Square } | null>(null)
@@ -151,12 +151,13 @@ export function useChessGame(onMove?: (move: Move) => void) {
   }, [game, rerender])
 
   const reset = useCallback(() => {
-    game.reset()
+    if (initialFen) game.load(initialFen)
+    else game.reset()
     setSelected(null)
     setLastMove(null)
     setPendingPromotion(null)
     rerender()
-  }, [game, rerender])
+  }, [game, rerender, initialFen])
 
   const flipBoard = useCallback(() => {
     setOrientation((o) => (o === 'w' ? 'b' : 'w'))

@@ -79,3 +79,16 @@ export function playCheckmateSound() {
     { freq: 783.99, time: 0.24, duration: 0.25, type: 'triangle' },
   ])
 }
+
+/** Short upbeat chime for correctly completing a tutorial task. */
+export function playSuccessSound() {
+  playTones([
+    { freq: 587.33, time: 0, duration: 0.09, type: 'triangle' },
+    { freq: 880, time: 0.09, duration: 0.18, type: 'triangle' },
+  ])
+}
+
+/** Low buzz for an incorrect tutorial task attempt. */
+export function playWrongSound() {
+  playTones([{ freq: 160, time: 0, duration: 0.16, type: 'square', gain: 0.12 }])
+}

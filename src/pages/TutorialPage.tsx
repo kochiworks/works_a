@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { DemoBoard } from '../components/DemoBoard'
+import { LessonPractice } from '../components/LessonPractice'
 import {
   TIER_LABELS,
   TUTORIAL_TIERS,
@@ -84,9 +84,9 @@ export function TutorialPage({ onBack, onStartGame }: TutorialPageProps) {
               ))}
             </ul>
           </div>
-          <div className="rules-board-demo">
-            <DemoBoard fen={lesson.fen} />
+          <div className="lesson-board-panel">
             <p className="demo-caption">{lesson.caption}</p>
+            <LessonPractice key={`${tierData.tier}-${lesson.level}`} lesson={lesson} />
           </div>
         </div>
 
