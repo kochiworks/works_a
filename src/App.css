@@ -662,3 +662,368 @@
     max-height: 220px;
   }
 }
+
+/* ---------- Home / Rules / Tutorial pages ---------- */
+
+.page {
+  width: 100%;
+  max-width: 1000px;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.page-header {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.page-header h1 {
+  font-size: 1.4rem;
+}
+
+.page-lead {
+  color: var(--text-dim);
+  font-size: 0.95rem;
+  max-width: 640px;
+}
+
+.back-btn {
+  justify-self: start;
+  padding: 0.45rem 0.8rem;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--panel-bg);
+  color: var(--text);
+  cursor: pointer;
+  font-size: 0.85rem;
+  white-space: nowrap;
+}
+
+.back-btn:hover {
+  border-color: var(--accent);
+}
+
+.header-back-btn {
+  justify-self: start;
+}
+
+/* Home page */
+
+.home-page {
+  align-items: center;
+  text-align: center;
+  padding-top: 2rem;
+  gap: 2rem;
+}
+
+.home-hero h1 {
+  font-size: 2.4rem;
+  margin-bottom: 0.5rem;
+}
+
+.home-hero p {
+  color: var(--text-dim);
+  font-size: 1rem;
+}
+
+.home-nav-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1rem;
+  width: 100%;
+}
+
+.home-nav-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 1.5rem 1.25rem;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  background: var(--panel-bg);
+  color: var(--text);
+  cursor: pointer;
+  text-align: center;
+  transition: border-color 0.15s ease, transform 0.15s ease;
+}
+
+.home-nav-card:hover {
+  border-color: var(--accent);
+  transform: translateY(-2px);
+}
+
+.home-nav-icon {
+  font-size: 2.2rem;
+}
+
+.home-nav-title {
+  font-size: 1.1rem;
+  font-weight: 700;
+}
+
+.home-nav-desc {
+  color: var(--text-dim);
+  font-size: 0.85rem;
+  line-height: 1.4;
+}
+
+/* Rules page */
+
+.rules-section {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  background: var(--panel-bg);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 1rem 1.25rem;
+}
+
+.rules-section h2 {
+  font-size: 1.05rem;
+}
+
+.piece-move-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 0.6rem;
+}
+
+.piece-move-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.6rem;
+  padding: 0.5rem 0.6rem;
+  border-radius: 8px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+}
+
+.piece-move-icon {
+  font-size: 1.8rem;
+  line-height: 1;
+}
+
+.piece-move-card p {
+  margin: 0.15rem 0 0;
+  font-size: 0.82rem;
+  color: var(--text-dim);
+}
+
+.rules-list {
+  margin: 0;
+  padding-left: 1.1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  font-size: 0.88rem;
+  line-height: 1.5;
+}
+
+.rules-with-board {
+  display: flex;
+  gap: 1.25rem;
+  align-items: flex-start;
+  flex-wrap: wrap;
+}
+
+.rules-with-board .rules-list {
+  flex: 1 1 280px;
+}
+
+.rules-board-demo {
+  flex: 0 0 260px;
+  max-width: 260px;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.demo-board .square {
+  cursor: default;
+}
+
+.demo-caption {
+  font-size: 0.78rem;
+  color: var(--text-dim);
+  text-align: center;
+  margin: 0;
+}
+
+.rules-cta {
+  display: flex;
+  gap: 0.75rem;
+  justify-content: center;
+  flex-wrap: wrap;
+  padding-top: 0.5rem;
+}
+
+.cta-btn {
+  padding: 0.65rem 1.1rem;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--panel-bg);
+  color: var(--text);
+  cursor: pointer;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.cta-btn:hover {
+  border-color: var(--accent);
+}
+
+.cta-btn.cta-primary {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #12190f;
+}
+
+/* Tutorial page */
+
+.tier-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1rem;
+}
+
+.tier-card {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.4rem;
+  padding: 1.1rem 1.2rem;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: var(--panel-bg);
+  color: var(--text);
+  cursor: pointer;
+  text-align: left;
+}
+
+.tier-card:hover {
+  border-color: var(--accent);
+}
+
+.tier-card-label {
+  font-size: 1.1rem;
+  font-weight: 700;
+}
+
+.tier-card-desc {
+  font-size: 0.85rem;
+  color: var(--text-dim);
+  line-height: 1.4;
+}
+
+.tier-card-count {
+  font-size: 0.75rem;
+  color: var(--accent);
+  font-weight: 600;
+}
+
+.lesson-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 0.6rem;
+}
+
+.lesson-tile {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.3rem;
+  padding: 0.7rem 0.8rem;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--panel-bg);
+  color: var(--text);
+  cursor: pointer;
+  text-align: left;
+}
+
+.lesson-tile:hover {
+  border-color: var(--accent);
+}
+
+.lesson-tile-level {
+  font-size: 0.7rem;
+  color: var(--accent);
+  font-weight: 700;
+}
+
+.lesson-tile-title {
+  font-size: 0.88rem;
+  font-weight: 600;
+}
+
+.lesson-detail {
+  display: flex;
+  gap: 1.5rem;
+  align-items: flex-start;
+  flex-wrap: wrap;
+}
+
+.lesson-text {
+  flex: 1 1 320px;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.lesson-text h2 {
+  font-size: 1.2rem;
+}
+
+.lesson-summary {
+  color: var(--text-dim);
+  font-size: 0.9rem;
+  margin: 0;
+}
+
+.lesson-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.lesson-nav-btn {
+  padding: 0.55rem 0.9rem;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--panel-bg);
+  color: var(--text);
+  cursor: pointer;
+  font-size: 0.85rem;
+}
+
+.lesson-nav-btn:hover:not(:disabled) {
+  border-color: var(--accent);
+}
+
+.lesson-nav-btn:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+@media (max-width: 760px) {
+  .rules-with-board {
+    flex-direction: column;
+  }
+
+  .rules-board-demo {
+    max-width: 100%;
+    align-self: center;
+    width: 260px;
+  }
+
+  .lesson-detail {
+    flex-direction: column;
+  }
+}

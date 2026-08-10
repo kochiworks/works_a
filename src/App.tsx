@@ -8,6 +8,9 @@ import { MoveList } from './components/MoveList'
 import { Controls } from './components/Controls'
 import { AiSettings, type GameMode, type LocalField } from './components/AiSettings'
 import type { PlayerSummary } from './components/PlayerList'
+import { HomePage } from './pages/HomePage'
+import { RulesPage } from './pages/RulesPage'
+import { TutorialPage } from './pages/TutorialPage'
 import { useChessGame } from './chess/useChessGame'
 import { useAiWorker } from './chess/useAiWorker'
 import { AI_SPEED_PRESETS } from './chess/engine'
@@ -56,7 +59,10 @@ const PLAYER_NAME_KEY = 'chess.playerName'
 const LOCAL_PLAYER1_KEY = 'chess.localPlayer1Name'
 const LOCAL_PLAYER2_KEY = 'chess.localPlayer2Name'
 
+type View = 'home' | 'rules' | 'tutorial' | 'play'
+
 function App() {
+  const [view, setView] = useState<View>('home')
   const [soundOn, setSoundOn] = useState(true)
 
   const handleMove = useCallback((move: Move) => {
@@ -296,10 +302,44 @@ function App() {
     })
   }
 
+  if (view === 'home') {
+    return (
+      <div className="app">
+        <HomePage
+          onNavigateRules={() => setView('rules')}
+          onNavigateTutorial={() => setView('tutorial')}
+          onNavigatePlay={() => setView('play')}
+        />
+      </div>
+    )
+  }
+
+  if (view === 'rules') {
+    return (
+      <div className="app">
+        <RulesPage
+          onBack={() => setView('home')}
+          onStartGame={() => setView('play')}
+          onStartTutorial={() => setView('tutorial')}
+        />
+      </div>
+    )
+  }
+
+  if (view === 'tutorial') {
+    return (
+      <div className="app">
+        <TutorialPage onBack={() => setView('home')} onStartGame={() => setView('play')} />
+      </div>
+    )
+  }
+
   return (
     <div className="app">
       <header className="app-header">
-        <span className="app-header-spacer" aria-hidden="true" />
+        <button type="button" className="back-btn header-back-btn" onClick={() => setView('home')}>
+          ← 홈
+        </button>
         <h1>♞ 체스</h1>
         <button
           type="button"
